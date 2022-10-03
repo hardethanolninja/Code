@@ -41,6 +41,17 @@ const chapterList = [
     twitter: "",
     insta: "austin.insta.com",
   },
+  {
+    title: "Houston",
+    alt: "Houston Chapter Location",
+    loc: [29.7604, -95.3698],
+    homepage: "https://www.npsot.us/chapters/houston",
+    email: "",
+    fb: "houston.facebook.com",
+    youtube: "",
+    twitter: "",
+    insta: "",
+  },
 ];
 
 const iconUrl =
