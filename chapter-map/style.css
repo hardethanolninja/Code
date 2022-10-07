@@ -1,0 +1,25 @@
+#chapter_map {
+  height: 100vh;
+}
+.chapter-title {
+  font-size: 24px;
+}
+.chapter-link {
+  font-size: 20px;
+  text-decoration: none;
+}
+.chapter-link:hover {
+  text-decoration: underline;
+}
+.leaflet-control-layers-expanded {
+  font-size: 20px;
+}
+.ecoregion-popup {
+  color: #3c5799;
+  transform: translate(50vw, 80vh) !important;
+  position: absolute !important;
+  font-size: 30px;
+}
+.ecoregion-popup:before {
+  border: none !important;
+}
