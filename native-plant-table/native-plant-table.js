@@ -18,6 +18,7 @@ const getNativePlantData = async () => {
         allPosts += json;
       }
     }
+
     // console.log("total pages", numPages);
 
     for (let [ind, plant] of allPosts.entries()) {
@@ -54,13 +55,24 @@ const getNativePlantData = async () => {
 
     table = new Tabulator("#tabulator-table", {
       columns: [
-        { title: "Common Name", field: "commonName", headerFilter: true },
+        {
+          title: "Common Name",
+          field: "commonName",
+          headerFilter: true,
+          formatter: "textarea",
+        },
         {
           title: "Other Common Names",
           field: "otherCommon",
           headerFilter: true,
+          formatter: "textarea",
         },
-        { title: "Scientific Name", field: "sciName", headerFilter: true },
+        {
+          title: "Scientific Name",
+          field: "sciName",
+          headerFilter: true,
+          formatter: "textarea",
+        },
         {
           title: "Ecoregion",
           field: "ecoRegion",
@@ -68,24 +80,61 @@ const getNativePlantData = async () => {
           formatter: "textarea",
           maxWidth: 200,
         },
-        { title: "Growth Form", field: "growthForm", headerFilter: true },
-        { title: "Height", field: "height", headerFilter: true },
-        { title: "Spread", field: "spread", headerFilter: true },
+        {
+          title: "Growth Form",
+          field: "growthForm",
+          headerFilter: true,
+          formatter: "textarea",
+        },
+        {
+          title: "Height",
+          field: "height",
+          headerFilter: true,
+          formatter: "textarea",
+        },
+        {
+          title: "Spread",
+          field: "spread",
+          headerFilter: true,
+          formatter: "textarea",
+        },
         {
           title: "Light (exact filter)",
           field: "light",
           headerFilter: true,
           headerFilterFunc: "=",
+          formatter: "textarea",
         },
         {
           title: "Water",
           field: "water",
           headerFilter: true,
+          formatter: "textarea",
         },
-        { title: "Leaf Retention", field: "leafRet", headerFilter: true },
-        { title: "Lifespan", field: "lifespan", headerFilter: true },
-        { title: "Bloom Color", field: "bloomColor", headerFilter: true },
-        { title: "Bloom Season", field: "bloomSeason", headerFilter: true },
+        {
+          title: "Leaf Retention",
+          field: "leafRet",
+          headerFilter: true,
+          formatter: "textarea",
+        },
+        {
+          title: "Lifespan",
+          field: "lifespan",
+          headerFilter: true,
+          formatter: "textarea",
+        },
+        {
+          title: "Bloom Color",
+          field: "bloomColor",
+          headerFilter: true,
+          formatter: "textarea",
+        },
+        {
+          title: "Bloom Season",
+          field: "bloomSeason",
+          headerFilter: true,
+          formatter: "textarea",
+        },
         {
           title: "Seasonal Interest",
           field: "seasonalInt",
@@ -112,19 +161,21 @@ const getNativePlantData = async () => {
           field: "maint",
           headerFilter: true,
           formatter: "textarea",
-          maxWidth: 300,
+          minWidth: 350,
+          maxWidth: 500,
         },
         {
           title: "Comments",
           field: "comm",
           headerFilter: true,
           formatter: "textarea",
-          maxWidth: 300,
+          minWidth: 350,
+          maxWidth: 500,
         },
       ],
       data: tableData,
-      layout: "fitData",
-      maxHeight: "100%",
+      layout: "fitColumns",
+      // maxHeight: "100%",
       footerElement:
         "<button onclick='downloadTabulator()'>Download CSV</button>",
     });
