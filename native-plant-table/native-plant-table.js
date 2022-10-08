@@ -60,79 +60,109 @@ const getNativePlantData = async () => {
           field: "commonName",
           headerFilter: true,
           formatter: "textarea",
+          minWidth: 100,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Other Common Names",
           field: "otherCommon",
           headerFilter: true,
           formatter: "textarea",
+          minWidth: 100,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Scientific Name",
           field: "sciName",
           headerFilter: true,
           formatter: "textarea",
+          minWidth: 100,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Ecoregion",
           field: "ecoRegion",
           headerFilter: true,
           formatter: "textarea",
+          minWidth: 150,
           maxWidth: 200,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Growth Form",
           field: "growthForm",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Height",
           field: "height",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Spread",
           field: "spread",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Light",
           field: "light",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Water",
           field: "water",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Leaf Retention",
           field: "leafRet",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Lifespan",
           field: "lifespan",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Bloom Color",
           field: "bloomColor",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Bloom Season",
           field: "bloomSeason",
           headerFilter: true,
           formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Seasonal Interest",
@@ -140,6 +170,8 @@ const getNativePlantData = async () => {
           headerFilter: true,
           formatter: "textarea",
           maxWidth: 200,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Wildlife Benefit",
@@ -147,6 +179,8 @@ const getNativePlantData = async () => {
           headerFilter: true,
           formatter: "textarea",
           maxWidth: 200,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Soil",
@@ -154,6 +188,8 @@ const getNativePlantData = async () => {
           headerFilter: true,
           formatter: "textarea",
           maxWidth: 200,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Maintenence",
@@ -162,6 +198,8 @@ const getNativePlantData = async () => {
           formatter: "textarea",
           minWidth: 350,
           maxWidth: 500,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
         {
           title: "Comments",
@@ -170,10 +208,14 @@ const getNativePlantData = async () => {
           formatter: "textarea",
           minWidth: 350,
           maxWidth: 500,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
         },
       ],
       data: tableData,
       layout: "fitColumns",
+      responsiveLayout: "collapse",
+      movableColumns: true,
       // maxHeight: "100%",
       footerElement:
         "<button onclick='downloadTabulator()'>Download CSV</button>",
@@ -181,6 +223,50 @@ const getNativePlantData = async () => {
   } catch (error) {
     console.log(error);
   }
+};
+
+var headerMenu = function () {
+  var menu = [];
+  var columns = this.getColumns();
+
+  for (let column of columns) {
+    //create checkbox element using font awesome icons
+    let icon = document.createElement("i");
+    icon.classList.add("fas");
+    icon.classList.add(column.isVisible() ? "fa-check-square" : "fa-square");
+
+    //build label
+    let label = document.createElement("span");
+    let title = document.createElement("span");
+
+    title.textContent = " " + column.getDefinition().title;
+
+    label.appendChild(icon);
+    label.appendChild(title);
+
+    //create menu item
+    menu.push({
+      label: label,
+      action: function (e) {
+        //prevent menu closing
+        e.stopPropagation();
+
+        //toggle current column visibility
+        column.toggle();
+
+        //change menu item icon
+        if (column.isVisible()) {
+          icon.classList.remove("fa-square");
+          icon.classList.add("fa-check-square");
+        } else {
+          icon.classList.remove("fa-check-square");
+          icon.classList.add("fa-square");
+        }
+      },
+    });
+  }
+
+  return menu;
 };
 
 //run function
