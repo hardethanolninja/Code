@@ -1,3 +1,5 @@
+//http://tabulator.info/
+
 const tableData = [];
 let table;
 
@@ -196,7 +198,7 @@ const getNativePlantData = async () => {
           field: "maint",
           headerFilter: true,
           formatter: "textarea",
-          minWidth: 350,
+          minWidth: 200,
           maxWidth: 500,
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
@@ -206,7 +208,7 @@ const getNativePlantData = async () => {
           field: "comm",
           headerFilter: true,
           formatter: "textarea",
-          minWidth: 350,
+          minWidth: 200,
           maxWidth: 500,
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
@@ -214,7 +216,7 @@ const getNativePlantData = async () => {
       ],
       data: tableData,
       layout: "fitColumns",
-      responsiveLayout: "collapse",
+      // responsiveLayout: "collapse",
       movableColumns: true,
       // maxHeight: "100%",
       footerElement:
