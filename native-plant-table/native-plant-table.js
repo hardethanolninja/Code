@@ -99,10 +99,9 @@ const getNativePlantData = async () => {
           formatter: "textarea",
         },
         {
-          title: "Light (exact filter)",
+          title: "Light",
           field: "light",
           headerFilter: true,
-          headerFilterFunc: "=",
           formatter: "textarea",
         },
         {
