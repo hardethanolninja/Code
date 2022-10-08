@@ -3,28 +3,11 @@
   --secondary: #889bce;
 }
 
-#native-plant-table {
-  margin-left: auto;
-  margin-right: auto;
-  font-size: 12px;
-  width: 100%;
-}
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap");
 
-#native-plant-table th {
-  border: 1px solid black;
-  text-align: center;
-  padding: 5px;
-  background-color: var(--primary);
-  color: white;
-  font-size: 14px;
-}
-
-#native-plant-table tr:nth-child(even) {
-  background-color: var(--secondary);
-}
-
-#native-plant-table td {
-  border: 1px solid black;
-  text-align: center;
-  padding: 5px;
+.tabulator {
+  font-size: 18px;
+  font-family: "Source Sans Pro", "Gill Sans MT", Calibri, "Trebuchet MS",
+    sans-serif;
+  height: 95vh;
 }
