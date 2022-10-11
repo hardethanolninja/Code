@@ -3,6 +3,32 @@
   --secondary: #889bce;
 }
 
+#npsot-tabulator-container {
+  height: 100vh;
+}
+
+.npsot-tabulator-filter-container {
+  display: flex;
+  margin: 5px;
+}
+
+.npsot-tabulator-filter-container > div {
+  margin-right: 20px;
+}
+
+#filter-button-container {
+  display: flex;
+  align-items: end;
+  margin-left: auto;
+}
+
+.tabulator-footer {
+  display: flex;
+}
+.tabulator-footer-contents > button {
+  margin: 4px;
+}
+
 .fa-square {
   color: var(--secondary);
   font-size: 20px;

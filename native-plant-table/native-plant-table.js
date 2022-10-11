@@ -31,8 +31,10 @@ const getNativePlantData = async () => {
         sciName: `${plant.acf.scientific_name}`,
         ecoRegion: `${plant.acf.ecoregion.join(", ")}`,
         growthForm: `${plant.acf.growth_form}`,
-        height: `${plant.acf.height}`,
-        spread: `${plant.acf.spread}`,
+        minHeight: `${plant.acf.min_height}`,
+        maxHeight: `${plant.acf.max_height}`,
+        minSpread: `${plant.acf.min_spread}`,
+        maxSpread: `${plant.acf.max_spread}`,
         light: `${plant.acf.light.join(", ")}`,
         water: `${plant.acf.water.join(", ")}`,
         leafRet: `${plant.acf.leaf_retention}`,
@@ -57,6 +59,14 @@ const getNativePlantData = async () => {
 
     table = new Tabulator("#tabulator-table", {
       columns: [
+        {
+          title: "Growth Form",
+          field: "growthForm",
+          headerFilter: true,
+          formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
+        },
         {
           title: "Common Name",
           field: "commonName",
@@ -89,30 +99,39 @@ const getNativePlantData = async () => {
           field: "ecoRegion",
           headerFilter: true,
           formatter: "textarea",
-          minWidth: 150,
+          minWidth: 100,
           maxWidth: 200,
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
         },
+
         {
-          title: "Growth Form",
-          field: "growthForm",
+          title: "Min Height",
+          field: "minHeight",
           headerFilter: true,
           formatter: "textarea",
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
         },
         {
-          title: "Height",
-          field: "height",
+          title: "Max Height",
+          field: "maxHeight",
           headerFilter: true,
           formatter: "textarea",
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
         },
         {
-          title: "Spread",
-          field: "spread",
+          title: "Min Spread",
+          field: "minSpread",
+          headerFilter: true,
+          formatter: "textarea",
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
+        },
+        {
+          title: "Max Spread",
+          field: "maxSpread",
           headerFilter: true,
           formatter: "textarea",
           headerMenu: headerMenu,
@@ -151,14 +170,6 @@ const getNativePlantData = async () => {
           headerFilterPlaceholder: "Filter this field...",
         },
         {
-          title: "Bloom Color",
-          field: "bloomColor",
-          headerFilter: true,
-          formatter: "textarea",
-          headerMenu: headerMenu,
-          headerFilterPlaceholder: "Filter this field...",
-        },
-        {
           title: "Bloom Season",
           field: "bloomSeason",
           headerFilter: true,
@@ -167,17 +178,16 @@ const getNativePlantData = async () => {
           headerFilterPlaceholder: "Filter this field...",
         },
         {
-          title: "Seasonal Interest",
-          field: "seasonalInt",
+          title: "Bloom Color",
+          field: "bloomColor",
           headerFilter: true,
           formatter: "textarea",
-          maxWidth: 200,
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
         },
         {
-          title: "Wildlife Benefit",
-          field: "wildlifeBen",
+          title: "Seasonal Interest",
+          field: "seasonalInt",
           headerFilter: true,
           formatter: "textarea",
           maxWidth: 200,
@@ -194,12 +204,20 @@ const getNativePlantData = async () => {
           headerFilterPlaceholder: "Filter this field...",
         },
         {
+          title: "Wildlife Benefit",
+          field: "wildlifeBen",
+          headerFilter: true,
+          formatter: "textarea",
+          maxWidth: 200,
+          headerMenu: headerMenu,
+          headerFilterPlaceholder: "Filter this field...",
+        },
+        {
           title: "Maintenence",
           field: "maint",
           headerFilter: true,
           formatter: "textarea",
           minWidth: 200,
-          maxWidth: 500,
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
         },
@@ -209,7 +227,6 @@ const getNativePlantData = async () => {
           headerFilter: true,
           formatter: "textarea",
           minWidth: 200,
-          maxWidth: 500,
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
         },
@@ -218,9 +235,9 @@ const getNativePlantData = async () => {
       layout: "fitColumns",
       // responsiveLayout: "collapse",
       movableColumns: true,
-      // maxHeight: "100%",
+      maxHeight: "100%",
       footerElement:
-        "<button onclick='downloadTabulator()'>Download CSV</button>",
+        "<button onclick='downloadCSV()'>Download CSV</button><button onclick='downloadExcel()'>Download XLSX</button>",
     });
   } catch (error) {
     console.log(error);
@@ -271,9 +288,72 @@ var headerMenu = function () {
   return menu;
 };
 
+//filter function for top of table
+const HSfieldEl = document.getElementById("hs-filter-field");
+const HStypeEl = document.getElementById("hs-filter-type");
+const HSvalueEl = document.getElementById("hs-filter-value");
+
+function bigTrees() {
+  table.setFilter([
+    { field: "growthForm", type: "=", value: "Tree" },
+    { field: "maxHeight", type: ">=", value: 25 },
+  ]);
+}
+function smallTrees() {
+  table.setFilter([
+    { field: "growthForm", type: "=", value: "Tree" },
+    { field: "maxHeight", type: "<", value: 25 },
+  ]);
+}
+function lowWater() {
+  table.setFilter([{ field: "water", type: "=", value: "Low" }]);
+}
+
+function updateFilter() {
+  const filterVal = HSfieldEl.options[HSfieldEl.selectedIndex].value;
+  const typeVal = HStypeEl.options[HStypeEl.selectedIndex].value;
+
+  const filter = filterVal == "function" ? customFilter : filterVal;
+
+  if (filterVal == "function") {
+    HStypeEl.disabled = true;
+    HSvalueEl.disabled = true;
+  } else {
+    HStypeEl.disabled = false;
+    HSvalueEl.disabled = false;
+  }
+
+  if (filterVal) {
+    table.setFilter(filter, typeVal, HSvalueEl.value);
+  }
+}
+
+//Update filters on value change
+document
+  .getElementById("hs-filter-field")
+  .addEventListener("change", updateFilter);
+document
+  .getElementById("hs-filter-type")
+  .addEventListener("change", updateFilter);
+document
+  .getElementById("hs-filter-value")
+  .addEventListener("keyup", updateFilter);
+
+//Clear filters on "Clear Filters" button click
+document.getElementById("filter-clear").addEventListener("click", function () {
+  HSfieldEl.value = "";
+  HStypeEl.value = "=";
+  HSvalueEl.value = "";
+
+  table.clearFilter();
+});
+
 //run function
 getNativePlantData();
 
-function downloadTabulator() {
+function downloadCSV() {
   table.download("csv", "plant-list.csv");
+}
+function downloadExcel() {
+  table.download("xlsx", "plant-list.xlsx", { sheetName: "Plant List" });
 }

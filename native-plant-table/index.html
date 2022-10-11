@@ -18,10 +18,50 @@
       type="text/javascript"
       src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"
     ></script>
+    <!-- Excel download dependencies -->
+    <script
+      type="text/javascript"
+      src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"
+    ></script>
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="tabulator-table"></div>
+    <div id="npsot-tabulator-container">
+      <div class="npsot-tabulator-filter-container">
+        <div>
+          <select id="hs-filter-field">
+            <option value="minHeight">Min Height</option>
+            <option value="maxHeight">Max Height</option>
+            <option value="minSpread">Min Spread</option>
+            <option value="maxSpread">Max Spread</option>
+          </select>
+          <select id="hs-filter-type">
+            <option value="=">=</option>
+            <option value="<"><</option>
+            <option value="<="><=</option>
+            <option value=">">></option>
+            <option value=">=">>=</option>
+            <option value="!=">!=</option>
+            <option value="like">like</option>
+          </select>
+          <input
+            id="hs-filter-value"
+            type="text"
+            placeholder="value to filter"
+          />
+        </div>
+        <div>
+          <button onclick="smallTrees()">Trees < 25'</button>
+          <button onclick="bigTrees()">Trees >= 25'</button>
+          <button onclick="lowWater()">Low Water</button>
+        </div>
+        <div id="filter-button-container">
+          <button id="filter-clear">Clear Filters</button>
+        </div>
+      </div>
+      <div id="tabulator-table"></div>
+    </div>
     <script src="native-plant-table.js"></script>
   </body>
 </html>
