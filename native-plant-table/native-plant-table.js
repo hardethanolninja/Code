@@ -54,8 +54,10 @@ const getNativePlantData = async () => {
         soil: `${plant.acf.soil_type.join(", ")}`,
         maint: `${plant.acf.maintenence}`,
         comm: `${plant.acf.comments}`,
+        plantLink: `${plant.link}`,
       });
     }
+    console.log(tableData);
 
     table = new Tabulator("#tabulator-table", {
       columns: [
@@ -75,6 +77,12 @@ const getNativePlantData = async () => {
           minWidth: 100,
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
+          formatter: "link",
+          formatterParams: {
+            target: "_blank",
+            labelField: "commonName",
+            urlField: "plantLink",
+          },
         },
         {
           title: "Other Common Names",
