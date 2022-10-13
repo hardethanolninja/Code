@@ -26,9 +26,9 @@ const getNativePlantData = async () => {
     for (let [ind, plant] of allPosts.entries()) {
       tableData.push({
         id: `${ind}`,
-        commonName: `${plant.title.rendered}`,
+        commonName: `${plant.acf.common_name}`,
         otherCommon: `${plant.acf.other_common_names}`,
-        sciName: `${plant.acf.scientific_name}`,
+        sciName: `${plant.title.rendered}`,
         ecoRegion: `${plant.acf.ecoregion.join(", ")}`,
         growthForm: `${plant.acf.growth_form}`,
         minHeight: `${plant.acf.min_height}`,
