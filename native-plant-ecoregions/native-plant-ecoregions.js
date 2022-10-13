@@ -245,19 +245,20 @@ L.geoJSON(texasGeo, {
 
 //wait for page to load
 window.addEventListener("load", function () {
-  //get array of ecoregions from the page
-  // const plantArr = document
-  //   .querySelector("#ecoregion-list")
-  //   .childNodes[1].innerText.split(",");
+  // get array of ecoregions from the page
+  const plantArr = document
+    .querySelector("#ecoregion-list")
+    .childNodes[1].innerText.split(",");
 
-  const plantArr = [
-    "Chihuahuan Deserts",
-    "High Plains",
-    "Texas Blackland Prairies",
-    "East Central Texas Plains",
-    "Western Gulf Coastal Plains",
-    "South Central Plains",
-  ];
+  //array for testing
+  // const plantArr = [
+  //   "Chihuahuan Deserts",
+  //   "High Plains",
+  //   "Texas Blackland Prairies",
+  //   "East Central Texas Plains",
+  //   "Western Gulf Coastal Plains",
+  //   "South Central Plains",
+  // ];
 
   //loop over texas ecoregions & the ecoregions for the plant, load overlays if they match
   let loadEcos = async () => {
@@ -270,6 +271,7 @@ window.addEventListener("load", function () {
               `https://geodata.epa.gov/arcgis/rest/services/ORD/USEPA_Ecoregions_Level_III_and_IV/MapServer/11/query?where=&text=&objectIds=${eco.id}&time=&timeRelation=esriTimeRelationOverlaps&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&sqlFormat=none&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson`
             );
             let json = await res.json();
+            //add ecoregion name so it can be bound to tooltip
             json.name = eco.name;
             promises.push(json);
           } catch (error) {

@@ -16,9 +16,9 @@
 }
 .ecoregion-popup {
   color: #3c5799;
-  transform: translate(50vw, 80vh) !important;
-  position: absolute !important;
-  font-size: 30px;
+  transform: translate(50px, 80px) !important;
+  position: fixed !important;
+  font-size: 20px;
 }
 .ecoregion-popup:before {
   border: none !important;
