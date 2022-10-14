@@ -52,7 +52,7 @@ const getNativePlantData = async () => {
             : plant.acf.wildlife_benefit
         }`,
         soil: `${plant.acf.soil_type.join(", ")}`,
-        maint: `${plant.acf.maintenence}`,
+        maint: `${plant.acf.maintenance}`,
         comm: `${plant.acf.comments}`,
         plantLink: `${plant.link}`,
       });
