@@ -11,8 +11,8 @@ const getNativePlantData = async () => {
     const res = await fetch(url);
     const numPages = res.headers.get("X-WP-TotalPages");
     const json = await res.json();
-
     const allPosts = json;
+
     if (numPages > 1) {
       for (let i = 2; i < numPages + 1; i++) {
         const res = await fetch(url + `?page=${i}`);
@@ -29,18 +29,38 @@ const getNativePlantData = async () => {
         commonName: `${plant.acf.common_name}`,
         otherCommon: `${plant.acf.other_common_names}`,
         sciName: `${plant.title.rendered}`,
-        ecoRegion: `${plant.acf.ecoregion.join(", ")}`,
+        ecoRegion: `${
+          plant.acf.ecoregion.length > 1
+            ? plant.acf.ecoregion.join(", ")
+            : plant.acf.ecoregion
+        }`,
         growthForm: `${plant.acf.growth_form}`,
         minHeight: `${plant.acf.min_height}`,
         maxHeight: `${plant.acf.max_height}`,
         minSpread: `${plant.acf.min_spread}`,
         maxSpread: `${plant.acf.max_spread}`,
-        light: `${plant.acf.light.join(", ")}`,
-        water: `${plant.acf.water.join(", ")}`,
+        light: `${
+          plant.acf.light.length > 1
+            ? plant.acf.light.join(", ")
+            : plant.acf.light
+        }`,
+        water: `${
+          plant.acf.water.length > 1
+            ? plant.acf.water.join(", ")
+            : plant.acf.water
+        }`,
         leafRet: `${plant.acf.leaf_retention}`,
         lifespan: `${plant.acf.lifespan}`,
-        bloomColor: `${plant.acf.blooming_color.join(", ")}`,
-        bloomSeason: `${plant.acf.blooming_season.join(", ")}`,
+        bloomColor: `${
+          plant.acf.blooming_color.length > 1
+            ? plant.acf.blooming_color.join(", ")
+            : plant.acf.blooming_color
+        }`,
+        bloomSeason: `${
+          plant.acf.blooming_season.length > 1
+            ? plant.acf.blooming_season.join(", ")
+            : plant.acf.blooming_season
+        }`,
         seasonalInt: `${
           plant.acf.seasonal_interest.length > 1
             ? plant.acf.seasonal_interest.join(", ")
@@ -51,13 +71,17 @@ const getNativePlantData = async () => {
             ? plant.acf.wildlife_benefit.join(", ")
             : plant.acf.wildlife_benefit
         }`,
-        soil: `${plant.acf.soil_type.join(", ")}`,
+        soil: `${
+          plant.acf.soil_type.length > 1
+            ? plant.acf.soil_type.join(", ")
+            : plant.acf.soil_type
+        }`,
         maint: `${plant.acf.maintenance}`,
         comm: `${plant.acf.comments}`,
         plantLink: `${plant.link}`,
       });
     }
-    console.log(tableData);
+    // console.log(tableData);
 
     table = new Tabulator("#tabulator-table", {
       columns: [
