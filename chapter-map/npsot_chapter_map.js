@@ -1,4 +1,7 @@
-const map = L.map("chapter_map").setView([31.9686, -99.9018], 6);
+let map = L.map("chapter-map", { zoomSnap: 0.25 }).setView(
+  [31.75, -99.9],
+  5.75
+);
 
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 10,

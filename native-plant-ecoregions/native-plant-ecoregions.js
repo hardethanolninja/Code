@@ -1,5 +1,8 @@
 //initalize map variable, lat long is center of texas, zoom level is 6
-let map = L.map("native-plant-map").setView([31.9686, -99.9018], 6);
+let map = L.map("native-plant-map", { zoomSnap: 0.25 }).setView(
+  [31.75, -99.9],
+  5.75
+);
 
 //set map tile layer to openstreet maps, bind zoom min max to avoid zooming to entire planet
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
