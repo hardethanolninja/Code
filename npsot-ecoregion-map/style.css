@@ -1,0 +1,44 @@
+#ecoregion_map {
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* .ecoregion-popup {
+  color: #3c5799;
+  transform: translate(50px, 80px) !important;
+  position: absolute !important;
+  font-size: 20px;
+}
+.ecoregion-popup:before {
+  border: none !important;
+} */
+
+.pointer-test {
+  position: fixed; /* Floating above */
+  transition: transform 0.2s; /* Sticking effect */
+  pointer-events: none; /* Allow clicking trough the div */
+  z-index: 999;
+}
+
+.spinner-container {
+  position: absolute;
+  z-index: 999;
+  color: #3c5799;
+  opacity: 0.8;
+}
+
+.leaflet-interactive {
+  outline: none;
+}
+
+.leaflet-interactive:hover {
+  fill-opacity: 0.7;
+}
+
+.leaflet-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

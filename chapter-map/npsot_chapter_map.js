@@ -445,6 +445,7 @@ ${
 }`;
 
   L.marker(e.loc, { icon: chapterIcon }).addTo(chapterPins).bindPopup(popup);
+
   map.addLayer(chapterPins);
 
   const loadCounties = async () => {
