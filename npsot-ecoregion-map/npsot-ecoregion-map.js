@@ -51,7 +51,7 @@ const level3Eco = [
   {
     name: "Southern Texas Plains",
     id: 25,
-    style: "navajowhite",
+    style: "indigo",
     info: "These rolling to moderately dissected plains were once covered in many areas with grassland and savanna vegetation that varied during wet and dry cycles. Following long continued grazing and fire suppression, thorny brush, such as mesquite, is now the predominant vegetation type. Ceniza and blackbrush occur on caliche soils. Also known as the Tamualipan Thornscrub, or the “brush country” as it is called locally, the region has its greatest extent in Mexico. The subhumid to dry region contains a diverse mosaic of soils, mostly clay, clay loam, and sandy clay loam surface textures, and ranging from alkaline to slightly acid. The ecoregion also contains a high and distinct diversity of plant and animal life. It is generally lower in elevation with warmer winters than the Chihuahuan Deserts to the northwest. Oil and natural gas production activities are widespread.",
   },
   {
@@ -280,6 +280,7 @@ let loadLevel3Ecos = async () => {
     document.querySelector(".spinner-container").hidden = true;
     for (let ecoregion of res) {
       L.geoJSON(ecoregion, {
+        className: "l3-layer-overlay",
         fillOpacity: 0.3,
         weight: 1,
         color: ecoregion.style,

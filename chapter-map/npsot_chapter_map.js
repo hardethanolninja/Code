@@ -10,6 +10,8 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
+//const chapterURL = "https://www.npsot.us/wp-json/wp/v2/pages?categories=97&_fields[]=acf&_fields[]=title&_fields[]=link"
+
 const chapterList = [
   {
     title: "Amarillo",

@@ -15,13 +15,6 @@
   border: none !important;
 } */
 
-.pointer-test {
-  position: fixed; /* Floating above */
-  transition: transform 0.2s; /* Sticking effect */
-  pointer-events: none; /* Allow clicking trough the div */
-  z-index: 999;
-}
-
 .spinner-container {
   position: absolute;
   z-index: 999;
@@ -33,7 +26,7 @@
   outline: none;
 }
 
-.leaflet-interactive:hover {
+.l3-layer-overlay:hover {
   fill-opacity: 0.7;
 }
 
