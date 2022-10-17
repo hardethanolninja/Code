@@ -17,6 +17,7 @@
   left: 0;
 }
 .leaflet-sidebar.right {
+  top: 0;
   right: -500px;
   transition: right 0.5s, width 0.5s;
   padding-left: 0;
