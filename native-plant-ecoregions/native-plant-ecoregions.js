@@ -5,11 +5,15 @@ let map = L.map("native-plant-map", { zoomSnap: 0.25 }).setView(
 );
 
 //set map tile layer to openstreet maps, bind zoom min max to avoid zooming to entire planet
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 10,
-  minZoom: 5,
-  attribution: "© OpenStreetMap",
-}).addTo(map);
+L.tileLayer(
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+  {
+    maxZoom: 10,
+    minZoom: 5,
+    attribution:
+      "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community",
+  }
+).addTo(map);
 
 //array of ecoregion objects.  ID is for the epa.gov API.  Can customize styling here, right now all layers are green.
 let ecoObj = [
@@ -59,7 +63,7 @@ let ecoObj = [
     style: "green",
   },
   {
-    name: "Western Gulf Coastal Plains",
+    name: "Western Gulf Coastal Plain",
     id: 28,
     style: "green",
   },
