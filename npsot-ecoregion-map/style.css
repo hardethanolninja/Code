@@ -1,5 +1,10 @@
+.map-container {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
 #ecoregion_map {
-  height: 90vh;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -46,6 +51,14 @@
   align-items: center;
 }
 
+.leaflet-control-layers-list {
+  font-size: 14px;
+}
+
+.leaflet-control-attribution {
+  flex-direction: row;
+}
+
 .leaflet-sidebar p {
   font-size: 18px;
 }
@@ -78,4 +91,37 @@
 }
 #level-4-loading i {
   margin-right: 6px;
+}
+#chapter-loading {
+  background-color: white;
+  position: absolute;
+  z-index: 5000;
+  right: 6px;
+  top: 100px;
+  padding: 0px 8px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+}
+#chapter-loading i {
+  margin-right: 6px;
+}
+
+.chapter-title {
+  font-size: 22px;
+  margin-bottom: 0px;
+}
+
+.chapter-tag {
+  font-size: 16px;
+}
+
+.chapter-link {
+  font-size: 18px;
+  text-decoration: none;
+  margin-top: 4px;
+}
+
+.chapter-link:hover {
+  text-decoration: underline;
 }
