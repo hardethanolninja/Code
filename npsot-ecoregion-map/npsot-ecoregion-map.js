@@ -75,16 +75,16 @@ function npsotEcoMap(
       info: "Also called the Post Oak Savanna or the Claypan Area, this region of irregular plains was originally covered by post oak savanna vegetation, in contrast to the more open prairie-type regions to the north, south, and west, and the pine forests to the east. The boundary with Ecoregion 35 is a subtle transition of soils and vegetation. Soils are variable among the parallel ridges and valleys, but tend to be acidic, with sands and sandy loams on the uplands and clay to clay loams in low-lying areas. Many areas have a dense, underlying clay pan affecting water movement and available moisture for plant growth. The bulk of this region is now used for pasture and range.",
     },
     {
-      name: "Western Gulf Coastal Plains",
+      name: "Gulf Coast Prairies and Marshes",
       id: 34,
       style: "royalblue",
-      info: "The Western Gulf Coastal Plain is a relatively flat strip of land, generally 50 to 90 miles wide, adjacent to the Gulf of Mexico. The principal distinguishing characteristics of this ecoregion are its relatively flat topography and mainly grassland potential natural vegetation. Inland from this region the plains are older, more irregular, and have mostly forest or savanna-type vegetation potentials. Largely because of these characteristics, a higher percentage of the land is in cropland than in bordering ecological regions. Rice, grain sorghum, cotton, and soybeans are the principal crops. Urban and industrial land uses have expanded greatly in recent decades, and oil and gas production is common.",
+      info: "In the Sep 2012 TPWD Texas Conservation Action Plan (TCAP), this ecoregion was renamed from South Central Plains (35) (Griffith et. al. 2007, North American Commission for Environmental Cooperation 2011). Here we use the TPWD TCAP names.<br><hr><p>Gulf Coast Prairies and Marshes is a relatively flat strip of land, generally 50 to 90 miles wide, adjacent to the Gulf of Mexico. The principal distinguishing characteristics of this ecoregion are its relatively flat topography and mainly grassland potential natural vegetation. Inland from this region the plains are older, more irregular, and have mostly forest or savanna-type vegetation potentials. Largely because of these characteristics, a higher percentage of the land is in cropland than in bordering ecological regions. Rice, grain sorghum, cotton, and soybeans are the principal crops. Urban and industrial land uses have expanded greatly in recent decades, and oil and gas production is common.</p>",
     },
     {
-      name: "South Central Plains",
+      name: "Western Gulf Coastal Plain",
       id: 35,
       style: "salmon",
-      info: "Locally termed the “piney woods”, this region of mostly irregular plains represents the western edge of the southern coniferous forest belt. Once blanketed by a mix of pine and hardwood forests, much of the region is now in loblolly and shortleaf pine plantations. Soils are mostly acidic sands and sandy loams. Covering parts of Louisiana, Arkansas, east Texas, and Oklahoma, only about one sixth of the region is in cropland, primarily within the Red River floodplain, while about two thirds of the region is in forests and woodland. Lumber, pulpwood, oil, and gas production are major economic activities.",
+      info: "In the Sep 2012 TPWD Texas Conservation Action Plan (TCAP), this ecoregion was renamed from South Central Plains (35) (Griffith et. al. 2007, North American Commission for Environmental Cooperation 2011). Here we use the TPWD TCAP names.<br><hr><p>Locally termed the “piney woods”, this region of mostly irregular plains represents the western edge of the southern coniferous forest belt. Once blanketed by a mix of pine and hardwood forests, much of the region is now in loblolly and shortleaf pine plantations. Soils are mostly acidic sands and sandy loams. Covering parts of Louisiana, Arkansas, east Texas, and Oklahoma, only about one sixth of the region is in cropland, primarily within the Red River floodplain, while about two thirds of the region is in forests and woodland. Lumber, pulpwood, oil, and gas production are major economic activities.</p>",
     },
   ];
 
@@ -665,6 +665,32 @@ function npsotEcoMap(
     .layers(null, null, { collapsed: false })
     .addTo(map);
 
+  if (eco3Load === true || eco4Load === true) {
+    //add legend to map
+    const level3legend = L.control({ position: "bottomright" });
+
+    //add legend
+    level3legend.onAdd = function (map) {
+      const div = L.DomUtil.create("div", "lvl3legend");
+      const items = L.DomUtil.create("div", "legend-items");
+      div.appendChild(items);
+      items.innerHTML += "<h4>Level 3 Ecoregions</h4>";
+      for (let ecoregion of level3Eco) {
+        items.innerHTML += `<div class="legend-key"><i style="background: ${ecoregion.style}"></i><span>${ecoregion.name}</span></div>`;
+      }
+      div.insertAdjacentHTML(
+        "beforeend",
+        "<button class='legend-toggle' onclick='toggleLegend()'>Toggle Legend</button>"
+      );
+      return div;
+    };
+    level3legend.addTo(map);
+    if (eco3Show === false && eco4Show === false) {
+      const legend = document.querySelector(".legend-items");
+      legend.style.display = "none";
+    }
+  }
+
   /*
 LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
   */
@@ -953,4 +979,23 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
     };
     loadChapters();
   }
+  // map.on("overlayadd", function (e) {
+  //   if (e.name === "Level 3 Ecoregions") {
+  //     document.querySelector(".lvl3legend").style.display = "block";
+  //   }
+  // });
+  // map.on("overlayremove", function (e) {
+  //   if (e.name === "Level 3 Ecoregions") {
+  //     document.querySelector(".lvl3legend").style.display = "none";
+  //   }
+  // });
 }
+
+const toggleLegend = () => {
+  const legend = document.querySelector(".legend-items");
+  legend.style.display === "none"
+    ? (legend.style.display = "block")
+    : (legend.style.display = "none");
+};
+
+// const checkbox

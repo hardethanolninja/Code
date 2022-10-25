@@ -1,4 +1,4 @@
-//initalize map variable, lat long is center of texas, zoom level is 6
+//initalize map variable, lat long is center of texas
 let map = L.map("native-plant-map", { zoomSnap: 0.25 }).setView(
   [31.75, -99.9],
   5.75
@@ -63,12 +63,12 @@ let ecoObj = [
     style: "green",
   },
   {
-    name: "Western Gulf Coastal Plain",
+    name: "Gulf Coast Prairies and Marshes",
     id: 28,
     style: "green",
   },
   {
-    name: "South Central Plains",
+    name: "Western Gulf Coastal Plain",
     id: 29,
     style: "green",
   },
@@ -253,19 +253,24 @@ L.geoJSON(texasGeo, {
 //wait for page to load
 window.addEventListener("load", function () {
   // get array of ecoregions from the page
-  const plantArr = document
-    .querySelector("#ecoregion-list")
-    .childNodes[1].innerText.split(",");
+  // const plantArr = document
+  //   .querySelector("#ecoregion-list")
+  //   .childNodes[1].innerText.split(",");
 
-  //array for testing
-  // const plantArr = [
-  //   "Chihuahuan Deserts",
-  //   "High Plains",
-  //   "Texas Blackland Prairies",
-  //   "East Central Texas Plains",
-  //   "Western Gulf Coastal Plains",
-  //   "South Central Plains",
-  // ];
+  // array for testing
+  const plantArr = [
+    "Chihuahuan Deserts",
+    "High Plains",
+    "Southwestern Tablelands",
+    "Central Great Plains",
+    "Cross Timbers",
+    "Edwards Plateau",
+    "Southern Texas Plains",
+    "Texas Blackland Prairies",
+    "East Central Texas Plains",
+    "Western Gulf Coastal Plain",
+    "Gulf Coast Prairies and Marshes",
+  ];
 
   //loop over texas ecoregions & the ecoregions for the plant, load overlays if they match
   let loadEcos = async () => {
