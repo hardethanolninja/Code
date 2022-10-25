@@ -1,8 +1,5 @@
-function npsotEcoMap(
-  [eco3Load, eco3Show],
-  [eco4Load, eco4Show],
-  [chapterLoad, chapterShow]
-) {
+// eco3Load, eco3Show, eco4Load, eco4Show, chapterLoad, chapterShow;
+function npsotEcoMap(params) {
   let map = L.map("ecoregion_map", { zoomSnap: 0.25 }).setView(
     [31.75, -99.9],
     5.75
@@ -665,7 +662,7 @@ function npsotEcoMap(
     .layers(null, null, { collapsed: false })
     .addTo(map);
 
-  if (eco3Load === true || eco4Load === true) {
+  if (params.eco3Load === true || params.eco4Load === true) {
     //add legend to map
     const level3legend = L.control({ position: "bottomright" });
 
@@ -685,7 +682,7 @@ function npsotEcoMap(
       return div;
     };
     level3legend.addTo(map);
-    if (eco3Show === false && eco4Show === false) {
+    if (params.eco3Show !== true && params.eco4Show !== true) {
       const legend = document.querySelector(".legend-items");
       legend.style.display = "none";
     }
@@ -694,7 +691,7 @@ function npsotEcoMap(
   /*
 LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
   */
-  if (eco3Load === true) {
+  if (params.eco3Load === true) {
     //initialize ecoregion layer
     const level3Layer = new L.layerGroup();
 
@@ -746,7 +743,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
             .addTo(level3Layer);
         }
         //add the layer to the map
-        if (eco3Show === true) {
+        if (params.eco3Show === true) {
           map.addLayer(level3Layer);
         }
 
@@ -765,7 +762,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
     map.addControl(l3sidebar);
   }
 
-  if (eco4Load === true) {
+  if (params.eco4Load === true) {
     //initialize ecoregion layer
     const level4Layer = new L.layerGroup();
 
@@ -796,7 +793,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
         }
       }
       Promise.all(lvl4Promises).then((res) => {
-        if (eco3Load === false && eco4Load === true) {
+        if (params.eco3Load === false && params.eco4Load === true) {
           document.querySelector(".spinner-container").hidden = true;
         }
         document.querySelector("#level-4-loading").style.display = "none";
@@ -818,7 +815,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
             })
             .addTo(level4Layer);
         }
-        if (eco4Show === true) {
+        if (params.eco4Show === true) {
           //add the layer to the map
           map.addLayer(level4Layer);
         }
@@ -837,7 +834,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
     map.addControl(l4sidebar);
   }
 
-  if (chapterLoad === true) {
+  if (params.chapterLoad === true) {
     const loadChapters = async () => {
       const iconUrl =
         "https://img.icons8.com/external-xnimrodx-blue-xnimrodx/64/000000/external-pin-event-and-party-xnimrodx-blue-xnimrodx.png";
@@ -923,7 +920,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
           }
         });
 
-        if (chapterShow === true) {
+        if (params.chapterShow === true) {
           map.addLayer(chapterPins);
         }
         layerControl.addOverlay(chapterPins, "Chapter Pins");
@@ -950,9 +947,9 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
             Promise.all(countyPromises).then((res) => {
               document.querySelector("#chapter-loading").style.display = "none";
               if (
-                eco3Load === false &&
-                eco4Load === false &&
-                chapterLoad === true
+                params.eco3Load === false &&
+                params.eco4Load === false &&
+                params.chapterLoad === true
               ) {
                 document.querySelector(".spinner-container").hidden = true;
               }
@@ -970,7 +967,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
             console.log(error);
           }
         }
-        if (chapterShow === true) {
+        if (params.chapterShow === true) {
           map.addLayer(chapterCounties);
         }
         layerControl.addOverlay(chapterCounties, "Chapter Counties");
@@ -997,5 +994,3 @@ const toggleLegend = () => {
     ? (legend.style.display = "block")
     : (legend.style.display = "none");
 };
-
-// const checkbox
