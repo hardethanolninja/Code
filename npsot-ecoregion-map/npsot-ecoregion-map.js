@@ -976,6 +976,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
     };
     loadChapters();
   }
+  //this will close and open the legend based on the level 3 ecoregion layer being toggled on or off
   // map.on("overlayadd", function (e) {
   //   if (e.name === "Level 3 Ecoregions") {
   //     document.querySelector(".lvl3legend").style.display = "block";
