@@ -85,7 +85,7 @@ function npsotEcoMap(params) {
     },
   ];
 
-  //array of level 4 ecoregion objects
+  //array of level 4 ecoregion objects. ID is for the epa.gov API
   const level4Eco = [
     {
       name: "Chihuahuan Desert Slopes",
@@ -657,11 +657,14 @@ function npsotEcoMap(params) {
     style: { weight: "5", fillOpacity: 0, color: "#3c5799" },
   }).addTo(map);
 
-  //add layer controller to map
+  //add layer controller to map.  this is used for the layer toggle checkboxes
   const layerControl = L.control
     .layers(null, null, { collapsed: false })
     .addTo(map);
 
+  /*
+ This will create a legend based on the level 3 ecoregions.  It will be loaded if either the level 3 ecoregion or level 4 ecoregions are loaded.  If both ecoregions are not shown by default, this will be minimized on load.
+  */
   if (params.eco3Load === true || params.eco4Load === true) {
     //add legend to map
     const level3legend = L.control({ position: "bottomright" });
@@ -689,7 +692,9 @@ function npsotEcoMap(params) {
   }
 
   /*
-LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
+  *eco3load* will load the level 3 ecoregion data.  Must be TRUE in order for eco3show to work.
+
+  *eco3show* will automatically populate the map with the level 3 ecoregions.  If not selected, the ecoregions & legend will load, but will be toggled off & minimized respectively.
   */
   if (params.eco3Load === true) {
     //initialize ecoregion layer
@@ -762,6 +767,11 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
     map.addControl(l3sidebar);
   }
 
+  /*
+  *eco4load* will load the level 3 ecoregion data.  Must be TRUE in order for eco4show to work.
+
+  *eco4show* will automatically populate the map with the level 4 ecoregions.  If not selected, the ecoregions & legend (for level 3 ecoregions) will load, but will be toggled off & minimized respectively.
+  */
   if (params.eco4Load === true) {
     //initialize ecoregion layer
     const level4Layer = new L.layerGroup();
@@ -834,6 +844,11 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
     map.addControl(l4sidebar);
   }
 
+  /*
+  *chapterLoad* will load the chapter location pins & chapter counties to create a "heatmap".  Must be TRUE in order for eco3show to work.
+
+  *chapterShow* will automatically populate the map with the chapter location pins & chapter counties.  If not selected, the chapter location pins & chapter counties will load but will be toggled off.
+  */
   if (params.chapterLoad === true) {
     const loadChapters = async () => {
       const iconUrl =
@@ -976,7 +991,7 @@ LOAD & DISPLAY LEVEL 3 ECOREGIONS BASED ON BOOLEANS PASSED INTO FORMULA
     };
     loadChapters();
   }
-  //this will close and open the legend based on the level 3 ecoregion layer being toggled on or off
+  //this will close and open the legend based on the level 3 ecoregion layer being toggled on or off.  commented out for now, but here for future reference
   // map.on("overlayadd", function (e) {
   //   if (e.name === "Level 3 Ecoregions") {
   //     document.querySelector(".lvl3legend").style.display = "block";
