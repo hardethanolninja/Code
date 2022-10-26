@@ -851,15 +851,28 @@ function npsotEcoMap(params) {
   */
   if (params.chapterLoad === true) {
     const loadChapters = async () => {
-      const iconUrl =
-        "https://img.icons8.com/external-xnimrodx-blue-xnimrodx/64/000000/external-pin-event-and-party-xnimrodx-blue-xnimrodx.png";
+      // const iconUrl =
+      //   "https://img.icons8.com/external-xnimrodx-blue-xnimrodx/64/000000/external-pin-event-and-party-xnimrodx-blue-xnimrodx.png";
 
-      const chapterIcon = L.icon({
-        iconUrl: iconUrl,
+      // const chapterIcon = L.icon({
+      //   iconUrl: iconUrl,
+      //   iconSize: [30, 30],
+      //   iconAnchor: [15, 30],
+      //   popupAnchor: [0, -10],
+      // });
+
+      // https://github.com/masajid390/BeautifyMarker
+      const iconOptions = {
+        // icon: "circle-dot",
+        icon: "users",
+        borderColor: "#3c5799",
+        textColor: "#3c5799",
+        backgroundColor: "rgba(255,255,255,0.8)",
+        iconShape: "marker",
         iconSize: [30, 30],
         iconAnchor: [15, 30],
-        popupAnchor: [0, -10],
-      });
+        innerIconAnchor: [0, 7],
+      };
 
       //initialize layer for chapter pins
       const chapterPins = new L.LayerGroup();
@@ -923,7 +936,7 @@ function npsotEcoMap(params) {
 
           if (ele.acf.ch_loc !== null) {
             L.marker([ele.acf.ch_loc.lat, ele.acf.ch_loc.lng], {
-              icon: chapterIcon,
+              icon: L.BeautifyIcon.icon(iconOptions),
             })
               .addTo(chapterPins)
               .bindPopup(popup);
@@ -962,8 +975,8 @@ function npsotEcoMap(params) {
             Promise.all(countyPromises).then((res) => {
               document.querySelector("#chapter-loading").style.display = "none";
               if (
-                params.eco3Load === false &&
-                params.eco4Load === false &&
+                params.eco3Load !== true &&
+                params.eco4Load !== true &&
                 params.chapterLoad === true
               ) {
                 document.querySelector(".spinner-container").hidden = true;
