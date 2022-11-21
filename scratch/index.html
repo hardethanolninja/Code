@@ -5,9 +5,48 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.1/dist/leaflet.css"
+      integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
+      crossorigin=""
+    />
+    <!-- leaflet script -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.1/dist/leaflet.js"
+      integrity="sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s="
+      crossorigin=""
+    ></script>
+    <!-- import fontawesome -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/d67bd54564.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- import leaflet beautify markers -->
+    <link
+      rel="stylesheet"
+      href="https://masajid390.github.io/BeautifyMarker/leaflet-beautify-marker-icon.css"
+    />
+    <script src="https://masajid390.github.io/BeautifyMarker/leaflet-beautify-marker-icon.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
   </head>
   <body>
-    <div id="map"></div>
+    <div class="map-container">
+      <div id="ecoregion_map">
+        <!-- <div class="spinner-container fa-5x">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </div> -->
+      </div>
+      <div id="l3sidebar"></div>
+      <div id="l4sidebar"></div>
+    </div>
+    <link rel="stylesheet" href="style.css" />
     <script type="text/javascript" src="script.js"></script>
   </body>
 </html>
