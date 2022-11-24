@@ -355,6 +355,9 @@ function NMap(params) {
               ) {
                 document.querySelector(".spinner-container").hidden = true;
               }
+              //skip chapters that do not have counties selected
+              if (res[0].features.length === 0) return;
+
               for (let county of res) {
                 L.geoJson(county.features[0].geometry, {
                   style: countyStyles,
