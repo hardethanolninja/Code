@@ -127,6 +127,7 @@
 
 .map-item__popup {
   font-size: 18px;
+  margin: 4px 0px !important;
 }
 
 .chapter-tag {

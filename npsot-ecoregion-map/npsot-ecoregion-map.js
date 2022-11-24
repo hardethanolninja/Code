@@ -1,10 +1,13 @@
-// eco3Load, eco3Show, eco4Load, eco4Show, chapterLoad, chapterShow, NICE, garden, monarch, BBMT, native;
+// eco3Load, eco3Show, eco4Load, eco4Show, chapterLoad, chapterShow, NICE, garden, monarch, BBMT, native, speaker
 function NMap(params) {
+  //initialize a map, zoomSnap enables smaller zoom intervals, intial view is center of texas.  5.75 is initial zoom level
   let map = L.map("ecoregion_map", { zoomSnap: 0.25 }).setView(
     [31.75, -99.9],
     5.75
   );
 
+  //select a tile layer
+  //https://leaflet-extras.github.io/leaflet-providers/preview/
   L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
     {
@@ -15,6 +18,8 @@ function NMap(params) {
     }
   ).addTo(map);
 
+  //prevents map pins that overlap from being hidden
+  //https://github.com/jawj/OverlappingMarkerSpiderfier-Leaflet
   const OMS = new OverlappingMarkerSpiderfier(map);
 
   // ZIP CODE lookup API link
@@ -27,6 +32,7 @@ function NMap(params) {
   const addressLookupURL =
     "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?benchmark=2020&format=json&address=";
 
+  //additional options for map icons
   // https://github.com/masajid390/BeautifyMarker
   const iconOptions = {
     borderWidth: 3,
@@ -120,6 +126,7 @@ function NMap(params) {
             weight: 1,
             color: ecoregion.style,
           })
+            //TODO currently uses unsplash filler images, needs to be updated in future with actual ecoregion pictures
             .bindTooltip(ecoregion.name, { className: "ecoregion-popup" })
             .on("click", function (e) {
               l3sidebar.setContent(`<h1>${ecoregion.name}</h1>
@@ -198,6 +205,7 @@ function NMap(params) {
             weight: 1,
             color: ecoregion.style,
           })
+            //TODO currently uses unsplash filler images, needs to be updated in future with actual ecoregion pictures
             .bindTooltip(ecoregion.name, { className: "ecoregion-popup" })
             .on("click", function (e) {
               l4sidebar.setContent(`<h1>${ecoregion.name}</h1>
@@ -264,7 +272,7 @@ function NMap(params) {
         );
         const chapterJson = await res.json();
         chapterJson.forEach((ele) => {
-          let tooltip = `<p class='chapter-text'>${ele.title.rendered} Chapter</p>`;
+          let tooltip = `<p class='map-item__popup'>${ele.title.rendered} Chapter</p>`;
 
           let popup = `<h3 class='chapter-title'><b>${
             ele.title.rendered
@@ -324,7 +332,7 @@ function NMap(params) {
         }
         layerControl.addOverlay(
           chapterPins,
-          "<i class='fa-solid fa-users'></i> Chapter Pins"
+          "<i class='fa-solid fa-users'></i> NPSOT Chapters"
         );
       } catch (error) {
         console.log(error);
@@ -704,6 +712,10 @@ function NMap(params) {
     };
     fetchMapData();
   }
+
+  /*
+   *speaker* will load & show the speaker locations.
+   */
   if (params.speaker === true) {
     const url = "https://npsot.us/wp-json/wp/v2/speaker_bureau/?per_page=100";
 
@@ -720,11 +732,11 @@ function NMap(params) {
       const speakerData = await Promise.all(speakerArr);
 
       if (params.speaker) {
-        //initialize layer for NICE pins
+        //initialize layer for speaker pins
         const OMS = new OverlappingMarkerSpiderfier(map);
         const speakerPins = new L.LayerGroup();
 
-        const speakerOptions = iconOptions;
+        const speakerOptions = { ...iconOptions };
         speakerOptions.icon = "graduation-cap";
         speakerOptions.textColor = "#C41E3A";
         speakerOptions.borderColor = "#C41E3A";
