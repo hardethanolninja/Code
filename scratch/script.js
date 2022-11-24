@@ -1,15 +1,11 @@
-const url = "https://npsot.us/wp-json/wp/v2/map-item/?per_page=100";
+const url = "https://npsot.us/wp-json/wp/v2/speaker_bureau/?per_page=100";
 
-const mapArr = [];
+const speakerArr = [];
 
 // https://github.com/masajid390/BeautifyMarker
 const iconOptions = {
-  //   icon: "shop",
   borderColor: "#3c5799",
   textColor: "#3c5799",
-  //   backgroundColor: NICENurseries[ind].Shipping
-  //     ? "rgba(136, 155, 206,0.8)"
-  //     : "rgba(255,255,255,0.8)",
   iconShape: "marker",
   iconSize: [30, 30],
   iconAnchor: [15, 30],
@@ -38,69 +34,92 @@ const fetchStuff = async (params) => {
     .addTo(map);
 
   try {
-    let mapRes = await fetch(url);
-    let mapJSON = await mapRes.json();
-    mapArr.push(mapJSON);
+    let speakerRes = await fetch(url);
+    let speakerJSON = await speakerRes.json();
+    speakerArr.push(speakerJSON);
   } catch (error) {
     console.log(error);
   }
-  const mapData = await Promise.all(mapArr);
+  const speakerData = await Promise.all(speakerArr);
 
-  if (params.nice) {
+  if (params.speaker) {
     //initialize layer for NICE pins
-    const NICEoms = new OverlappingMarkerSpiderfier(map);
-    const NICEPins = new L.LayerGroup();
+    const OMS = new OverlappingMarkerSpiderfier(map);
+    const speakerPins = new L.LayerGroup();
 
-    const NICEOptions = iconOptions;
-    NICEOptions.icon = "shop";
+    const speakerOptions = iconOptions;
+    speakerOptions.icon = "graduation-cap";
+    speakerOptions.textColor = "#C41E3A";
+    speakerOptions.borderColor = "#C41E3A";
+    speakerOptions.backgroundColor = "rgba(255,255,255,0.8)";
 
-    const niceData = mapData[0].filter(
-      (ele) => ele.acf.map_item_type === "NICE Partner"
+    const allSpeakers = speakerData[0].filter(
+      (ele) => ele.acf.speaker_post_type === "Speaker"
     );
 
-    for (nursery of niceData) {
-      //pick color based on shipping
-      nursery.acf.map_item_shipping === "Yes"
-        ? (NICEOptions.backgroundColor = "rgba(136, 155, 206,0.8)")
-        : (NICEOptions.backgroundColor = "rgba(255,255,255,0.8)");
-
+    for (speaker of allSpeakers) {
       //build tooltip
-      let tooltip = `<h3 class=map-item__title>${nursery.title.rendered}</h3>`;
+      let tooltip = `<h3 class=map-item__title data-distance="${speaker.acf.driving_distance}" data-lat="${speaker.acf.speaker_location.lat}" data-lng="${speaker.acf.speaker_location.lng}">${speaker.title.rendered}</h3>`;
 
       //build popup
-      let popup = `<h3 class=map-item__title>${nursery.title.rendered}</h3><br>
+      let popup = `<h3 class="map-item__title">${speaker.title.rendered}</h3>
+      <p class="map-item__text">Lives in ${
+        speaker.acf.speaker_location.city
+      }</p>
       ${
-        nursery.acf.map_item_shipping === "Yes"
-          ? "<p class='map-item__text'><b>We Ship!</b></p><br>"
-          : ""
+        speaker.acf.driving_distance
+          ? `<p class='map-item__text'>Speaker will drive ${speaker.acf.driving_distance} miles</p>`
+          : null
       }
       <a class='map-item__link' target='_blank' href=${
-        nursery.acf.map_item_external_url
-      }>Visit our Homepage</a><br>`;
+        speaker.link
+      }><b>View this Speaker's Info</b></a>`;
 
-      if (nursery.acf.map_item_associated_organization) {
-        popup += `<p class='nice-text'><b>Associated Chapters</b></p>`;
-        nursery.acf.map_item_associated_organization.forEach((ele) => {
-          const chapter = ele.replace(/ +/g, "-").toLowerCase();
-          popup += `<a class='map-item__link' href='https://npsot.us/chapter/${chapter}' target='_blank'>${ele}</a><br>`;
+      if (speaker.acf.speaker_affiliation) {
+        let speakerAffiliations = speaker.acf.speaker_affiliation.split(", ");
+        popup += `<hr><p class='map-item__text'><b>Associated Organization${
+          speakerAffiliations.length > 1 ? "s" : ""
+        }</b></p>`;
+        speakerAffiliations.forEach((ele) => {
+          popup += `<p class='map-item__text'>${ele}</p>`;
         });
       }
 
       const marker = L.marker(
-        [nursery.acf.map_item_loc.lat, nursery.acf.map_item_loc.lng],
+        [speaker.acf.speaker_location.lat, speaker.acf.speaker_location.lng],
         {
-          icon: L.BeautifyIcon.icon(NICEOptions),
+          icon: L.BeautifyIcon.icon(speakerOptions),
         }
       )
-        .addTo(NICEPins)
+        .addTo(speakerPins)
         .bindTooltip(tooltip)
-        .bindPopup(popup);
+        .bindPopup(popup)
+        .on("click", function (e) {
+          const regex = /"([^"]*)"/g;
 
-      NICEoms.addMarker(marker);
+          const data = e.target._tooltip._content.match(regex);
+
+          const circle = L.circle(
+            [data[1].slice(1, -1) * 1, data[2].slice(1, -1) * 1],
+            {
+              color: "#C41E3A",
+              radius: data[0].slice(1, -1) * 1609,
+            }
+          ).addTo(map);
+
+          circle.on("click", () => {
+            circle.remove();
+          });
+        });
+
+      OMS.addMarker(marker);
     }
 
-    map.addLayer(NICEPins);
-    layerControl.addOverlay(NICEPins, "NICE! Nurseries");
+    map.addLayer(speakerPins);
+    layerControl.addOverlay(
+      speakerPins,
+      "<i class='fa-solid fa-graduation-cap'></i>Speakers Bureau"
+    );
   }
 };
-fetchStuff({ nice: true });
+fetchStuff({ speaker: true });

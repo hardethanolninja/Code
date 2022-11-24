@@ -657,12 +657,11 @@ function NMap(params) {
                         <a class='map-item__link' target='_blank' href='${
                           garden.link
                         }'>Learn about this garden</a>
-                                                      ${
-                                                        garden.acf
-                                                          .map_item_external_url
-                                                          ? `<br><a class='map-item__link' target="_blank" href="${garden.acf.map_item_external_url}">Visit External Site</a>`
-                                                          : ""
-                                                      }`;
+                          ${
+                            garden.acf.map_item_external_url
+                              ? `<br><a class='map-item__link' target="_blank" href="${garden.acf.map_item_external_url}">Visit External Site</a>`
+                              : ""
+                          }`;
 
             if (garden.acf.map_item_associated_organization) {
               popup += `<hr><p class='map-item__text'><b>Associated Organizations</b></p>`;
@@ -701,6 +700,116 @@ function NMap(params) {
       }
     };
     fetchMapData();
+  }
+  if (params.speaker === true) {
+    const url = "https://npsot.us/wp-json/wp/v2/speaker_bureau/?per_page=100";
+
+    const speakerArr = [];
+
+    const fetchSpeakerData = async () => {
+      try {
+        let speakerRes = await fetch(url);
+        let speakerJSON = await speakerRes.json();
+        speakerArr.push(speakerJSON);
+      } catch (error) {
+        console.log(error);
+      }
+      const speakerData = await Promise.all(speakerArr);
+
+      if (params.speaker) {
+        //initialize layer for NICE pins
+        const OMS = new OverlappingMarkerSpiderfier(map);
+        const speakerPins = new L.LayerGroup();
+
+        const speakerOptions = iconOptions;
+        speakerOptions.icon = "graduation-cap";
+        speakerOptions.textColor = "#C41E3A";
+        speakerOptions.borderColor = "#C41E3A";
+        speakerOptions.backgroundColor = "rgba(255,255,255,0.8)";
+
+        const allSpeakers = speakerData[0].filter(
+          (ele) => ele.acf.speaker_post_type === "Speaker"
+        );
+
+        for (speaker of allSpeakers) {
+          //build tooltip
+          let tooltip = `<p class='map-item__popup' data-distance="${speaker.acf.driving_distance}" data-lat="${speaker.acf.speaker_location.lat}" data-lng="${speaker.acf.speaker_location.lng}">${speaker.title.rendered}</p>`;
+
+          //build popup
+          let popup = `<h3 class="map-item__title">${
+            speaker.title.rendered
+          }</h3>
+      <p class="map-item__text">Lives in ${
+        speaker.acf.speaker_location.city
+      }</p>
+      ${
+        speaker.acf.driving_distance
+          ? `<p class='map-item__text'>Speaker will drive ${speaker.acf.driving_distance} miles</p>`
+          : null
+      }
+      <a class='map-item__link' target='_blank' href=${
+        speaker.link
+      }><b>View this Speaker's Info</b></a>`;
+
+          if (speaker.acf.speaker_affiliation) {
+            let speakerAffiliations =
+              speaker.acf.speaker_affiliation.split(", ");
+            popup += `<hr><p class='map-item__text'><b>Associated Organization${
+              speakerAffiliations.length > 1 ? "s" : ""
+            }</b></p>`;
+            speakerAffiliations.forEach((ele) => {
+              popup += `<p class='map-item__text'>${ele}</p>`;
+            });
+          }
+
+          const marker = L.marker(
+            [
+              speaker.acf.speaker_location.lat,
+              speaker.acf.speaker_location.lng,
+            ],
+            {
+              icon: L.BeautifyIcon.icon(speakerOptions),
+            }
+          )
+            .addTo(speakerPins)
+            .bindTooltip(tooltip)
+            .bindPopup(popup)
+            .on("click", function (e) {
+              const regex = /"([^"]*)"/g;
+
+              const data = e.target._tooltip._content.match(regex);
+
+              const circle = L.circle(
+                [data[1].slice(1, -1) * 1, data[2].slice(1, -1) * 1],
+                {
+                  color: "#C41E3A",
+                  radius: data[0].slice(1, -1) * 1609,
+                }
+              ).addTo(map);
+
+              circle.on("click", () => {
+                circle.remove();
+              });
+            });
+
+          OMS.addMarker(marker);
+        }
+
+        map.addLayer(speakerPins);
+        layerControl.addOverlay(
+          speakerPins,
+          "<i class='fa-solid fa-graduation-cap'></i> Speakers Bureau"
+        );
+      }
+    };
+    fetchSpeakerData();
+    if (
+      params.eco3Show !== true &&
+      params.eco4Show !== true &&
+      params.chapterLoad !== true
+    ) {
+      document.querySelector(".spinner-container").hidden = true;
+    }
   }
 }
 

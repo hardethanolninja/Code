@@ -1,6 +1,7 @@
 .map-container {
-  height: 100vh;
+  height: 90vh;
   overflow-y: hidden;
+  border: 2px solid #3c5799;
 }
 
 #ecoregion_map {
@@ -92,6 +93,7 @@
 #level-4-loading i {
   margin-right: 6px;
 }
+
 #chapter-loading {
   background-color: white;
   position: absolute;
@@ -103,24 +105,28 @@
   display: flex;
   align-items: center;
 }
+
 #chapter-loading i {
   margin-right: 6px;
 }
 
 .chapter-title,
-.nice-title {
+.map-item__title {
   font-size: 22px;
-  margin-bottom: 0px;
 }
 
-.nice-text {
+.chapter-text,
+.map-item__text {
   font-size: 18px;
-  margin-bottom: 0 !important;
+  margin: 4px 0px !important;
 }
 
-.nice-text-sm {
+.map-item__text-sm {
   font-size: 16px;
-  margin: 0 !important;
+}
+
+.map-item__popup {
+  font-size: 18px;
 }
 
 .chapter-tag {
@@ -128,14 +134,14 @@
 }
 
 .chapter-link,
-.nice-link {
+.map-item__link {
   font-size: 18px;
   text-decoration: none;
   margin-top: 4px;
 }
 
 .chapter-link:hover,
-.nice-link:hover {
+.map-item__link:hover {
   text-decoration: underline;
 }
 
