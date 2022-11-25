@@ -1,6 +1,6 @@
 function getNpsotCal() {
   const calId =
-    "5e96cd7634f48f3e48aff806fa88204965375b5c240328b6e33721678c1fc7cb@group.calendar.google.com";
+    "@group.calendar.google.com";
   const key = "";
 
   const loadEvents = async () => {
