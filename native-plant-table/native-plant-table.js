@@ -6,22 +6,20 @@ let table;
 const getNativePlantData = async () => {
   const url = `https://npsot.us/wp-json/wp/v2/native-plant/?per_page=100`;
 
-  //query for native plant data
+  // query for native plant data
   try {
     const res = await fetch(url);
-    const numPages = res.headers.get("X-WP-TotalPages");
+    const numPages = res.headers.get("X-WP-TotalPages") * 1;
     const json = await res.json();
-    const allPosts = json;
+    let allPosts = json;
 
     if (numPages > 1) {
       for (let i = 2; i < numPages + 1; i++) {
-        const res = await fetch(url + `?page=${i}`);
+        const res = await fetch(url + `&page=${i}`);
         const json = await res.json();
-        allPosts += json;
+        allPosts = [...allPosts, ...json];
       }
     }
-
-    // console.log("total pages", numPages);
 
     for (let [ind, plant] of allPosts.entries()) {
       tableData.push({
@@ -84,7 +82,9 @@ const getNativePlantData = async () => {
     // console.log(tableData);
 
     table = new Tabulator("#tabulator-table", {
+      initialSort: [{ column: "commonName", dir: "asc" }],
       columns: [
+        { formatter: "rownum", width: 40 },
         {
           title: "Growth Form",
           field: "growthForm",
@@ -97,7 +97,6 @@ const getNativePlantData = async () => {
           title: "Common Name",
           field: "commonName",
           headerFilter: true,
-          formatter: "textarea",
           minWidth: 100,
           headerMenu: headerMenu,
           headerFilterPlaceholder: "Filter this field...",
