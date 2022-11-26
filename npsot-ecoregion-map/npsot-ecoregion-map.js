@@ -287,27 +287,27 @@ function NMap(params) {
           ${
             ele.acf.ch_fb === ""
               ? ""
-              : `<a class='chapter-link' href=${ele.acf.ch_fb}'>Visit us on Facebook</a><br>`
+              : `<a class='chapter-link' href='${ele.acf.ch_fb}' target='_blank'>Visit us on Facebook</a><br>`
           }
           ${
             ele.acf.ch_yt === ""
               ? ""
-              : `<a class='chapter-link' href=${ele.acf.ch_yt}'>Check out our Youtube Channel</a><br>`
+              : `<a class='chapter-link' href='${ele.acf.ch_yt}' target='_blank'>Check out our Youtube Channel</a><br>`
           }
           ${
             ele.acf.ch_tw === ""
               ? ""
-              : `<a class='chapter-link' href=${ele.acf.ch_tw}'>Subscribe to our Twitter feed</a><br>`
+              : `<a class='chapter-link' href='${ele.acf.ch_tw}' target='_blank'>Subscribe to our Twitter feed</a><br>`
           }
           ${
             ele.acf.ch_insta === ""
               ? ""
-              : `<a class='chapter-link' href=${ele.acf.ch_insta}'>Follow us on Instagram</a><br>`
+              : `<a class='chapter-link' href='${ele.acf.ch_insta}' target='_blank'>Follow us on Instagram</a><br>`
           }
           ${
             ele.acf.ch_other === ""
               ? ""
-              : `<a class='chapter-link' href=${ele.acf.ch_other}'>You can also find us here</a><br>`
+              : `<a class='chapter-link' href='${ele.acf.ch_other}' target='_blank'>You can also find us here</a><br>`
           }`;
 
           if (ele.acf.ch_loc !== null) {
@@ -757,11 +757,13 @@ function NMap(params) {
       <p class="map-item__text">Lives in ${
         speaker.acf.speaker_location.city
       }</p>
+
       ${
-        speaker.acf.driving_distance
+        speaker.acf.driving_distance > 1
           ? `<p class='map-item__text'>Speaker will drive ${speaker.acf.driving_distance} miles</p>`
-          : null
+          : "<p class='map-item__text'>Speaker does not travel</p>"
       }
+
       <a class='map-item__link' target='_blank' href=${
         speaker.link
       }><b>View this Speaker's Info</b></a>`;
