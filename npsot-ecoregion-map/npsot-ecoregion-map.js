@@ -1,10 +1,31 @@
 // eco3Load, eco3Show, eco4Load, eco4Show, chapterLoad, chapterShow, NICE, garden, monarch, BBMT, native, speaker
+
+/*
+// example script tag to load map
+<!--
+
+    window.addEventListener('load', 
+    NMap({chapterLoad: true, chapterShow: true, eco3Load: true})
+  )
+
+-->
+*/
+
 function NMap(params) {
   //initialize a map, zoomSnap enables smaller zoom intervals, intial view is center of texas.  5.75 is initial zoom level
+  const selectedZoom = params.zoom;
+  const selectedCenter = params.center;
+
   let map = L.map("ecoregion_map", { zoomSnap: 0.25 }).setView(
-    [31.75, -99.9],
-    5.75
+    params.center ? selectedCenter : [31.75, -99.9],
+    params.zoom ? selectedZoom : 5.75
   );
+  
+  //function to get center point and zoom level of map
+map.on('zoomend',function(e) {
+   console.log('center', e.target.getCenter());
+   console.log('zoom', e.target.getZoom());
+})
 
   //select a tile layer
   //https://leaflet-extras.github.io/leaflet-providers/preview/
@@ -74,18 +95,23 @@ function NMap(params) {
       );
       return div;
     };
-    level3legend.addTo(map);
-    if (params.eco3Show !== true && params.eco4Show !== true) {
-      const legend = document.querySelector(".legend-items");
-      legend.style.display = "none";
-    }
+  };
+    /************
+    //requested that legend be hidden, so it's commented out
+    // level3legend.addTo(map);
+    // if (params.eco3Show !== true && params.eco4Show !== true) {
+    //   const legend = document.querySelector(".legend-items");
+    //   legend.style.display = "none";
+    // }
   }
-
+    ************/
+    
   /*
   *eco3Load* will load the level 3 ecoregion data.  Must be TRUE in order for eco3Show to work.
 
   *eco3Show* will automatically populate the map with the level 3 ecoregions.  If not selected, the ecoregions & legend will load, but will be toggled off & minimized respectively.
   */
+  
   if (params.eco3Load === true) {
     //initialize ecoregion layer
     const level3Layer = new L.layerGroup();
@@ -111,6 +137,7 @@ function NMap(params) {
           json.name = eco.name;
           json.style = eco.style;
           json.info = eco.info;
+          json.img = eco.img;
           promises.push(json);
         } catch (error) {
           console.log(error);
@@ -126,14 +153,13 @@ function NMap(params) {
             weight: 1,
             color: ecoregion.style,
           })
-            //TODO currently uses unsplash filler images, needs to be updated in future with actual ecoregion pictures
             .bindTooltip(ecoregion.name, { className: "ecoregion-popup" })
             .on("click", function (e) {
               l3sidebar.setContent(`<h1>${ecoregion.name}</h1>
-          <img height=300 width=300 src="https://source.unsplash.com/random/300x300/?desert" />
-          <h2>Level 3 Ecoregion</h2>
-          <p>${ecoregion.info}</p>
-          <a style="color:gray" href="https://gaftp.epa.gov/epadatacommons/ORD/Ecoregions/tx/TXeco_Jan08_v8_Cmprsd.pdf">Reference: Griffith, Bryce, Omernick & Rodgers (2007). Ecoregions of Texas.</a>`);
+           <img height=300 width=300 src=${ecoregion.img} />
+        <h2>Level 3 Ecoregion</h2>
+        <p>${ecoregion.info}</p>
+         <a style="color:gray" href="https://gaftp.epa.gov/epadatacommons/ORD/Ecoregions/tx/TXeco_Jan08_v8_Cmprsd.pdf">Reference: Griffith, Bryce, Omernick & Rodgers (2007). Ecoregions of Texas.</a>`);
               l3sidebar.show();
             })
             .addTo(level3Layer);
@@ -206,10 +232,10 @@ function NMap(params) {
             color: ecoregion.style,
           })
             //TODO currently uses unsplash filler images, needs to be updated in future with actual ecoregion pictures
-            .bindTooltip(ecoregion.name, { className: "ecoregion-popup" })
+  //       <img height=300 width=300 src="https://source.unsplash.com/random/300x300/?desert" />
+             .bindTooltip(ecoregion.name, { className: "ecoregion-popup" })
             .on("click", function (e) {
               l4sidebar.setContent(`<h1>${ecoregion.name}</h1>
-          <img height=300 width=300 src="https://source.unsplash.com/random/300x300/?desert" />
           <h2>Level 4 Ecoregion</h2>
           <p>${ecoregion.info}</p>
           <a style="color:gray" href="https://gaftp.epa.gov/epadatacommons/ORD/Ecoregions/tx/TXeco_Jan08_v8_Cmprsd.pdf">Reference: Griffith, Bryce, Omernick & Rodgers (2007). Ecoregions of Texas.</a>`);
@@ -237,7 +263,7 @@ function NMap(params) {
   }
 
   /*
-  *chapterLoad* will load the chapter location pins & chapter counties to create a "heatmap".  Must be TRUE in order for eco3Show to work.
+  *chapterLoad* will load the chapter location pins & chapter counties to create a "heatmap".  Must be TRUE in order for chapterShow to work.
 
   *chapterShow* will automatically populate the map with the chapter location pins & chapter counties.  If not selected, the chapter location pins & chapter counties will load but will be toggled off.
   */
@@ -268,7 +294,7 @@ function NMap(params) {
 
       try {
         const res = await fetch(
-          `https://npsot.us/wp-json/wp/v2/pages?categories=97&_fields[]=acf&_fields[]=link&_fields[]=title&per_page=100`
+          `https://npsotstg.wpengine.com/wp-json/wp/v2/pages?categories=97&_fields[]=acf&_fields[]=link&_fields[]=title&per_page=100`
         );
         const chapterJson = await res.json();
         chapterJson.forEach((ele) => {
@@ -309,8 +335,12 @@ function NMap(params) {
               ? ""
               : `<a class='chapter-link' href='${ele.acf.ch_other}' target='_blank'>You can also find us here</a><br>`
           }`;
+          
 
-          if (ele.acf.ch_loc !== null) {
+        //short circut if no location
+          if (ele.acf.ch_loc === undefined || ele.acf.ch_loc === null) return
+
+          else {
             const marker = L.marker([ele.acf.ch_loc.lat, ele.acf.ch_loc.lng], {
               icon: L.BeautifyIcon.icon(chapterOptions),
             })
@@ -420,16 +450,29 @@ function NMap(params) {
     params.BBMT === true ||
     params.native === true
   ) {
+      
+    let mapArr = [];
     let mapData;
-    const mapArr = [];
-
-    const url = "https://npsot.us/wp-json/wp/v2/map-item/?per_page=100";
-
+    
+    
     const fetchMapData = async () => {
+    const url = "https://npsotstg.wpengine.com/wp-json/wp/v2/map-item/?per_page=100";
+    
       try {
+          
         let mapRes = await fetch(url);
+        let numPages = mapRes.headers.get("X-WP-Totalpages") * 1;
         let mapJSON = await mapRes.json();
-        mapArr.push(mapJSON);
+        mapArr = mapJSON;
+
+        if (numPages > 1) {
+            for (let i = 2; i < numPages + 1; i++) {
+                const res = await fetch(url + `&page=${i}`);
+                const json = await res.json();
+                mapArr = [...mapArr, ...json]
+            }
+        }
+        
       } catch (error) {
         console.log(error);
       }
@@ -446,7 +489,7 @@ function NMap(params) {
           NICEOptions.borderColor = "#E67E22";
           NICEOptions.icon = "shop";
 
-          const niceData = mapData[0].filter(
+          const niceData = mapData.filter(
             (ele) => ele.acf.map_item_type === "NICE Partner"
           );
 
@@ -476,7 +519,7 @@ function NMap(params) {
               popup += `<hr><p class='map-item__text'><b>Associated Chapters</b></p>`;
               nursery.acf.map_item_associated_organization.forEach((ele) => {
                 const chapter = ele.replace(/ +/g, "-").toLowerCase();
-                popup += `<a class='map-item__link' href='https://npsot.us/chapter/${chapter}' target='_blank'>${ele}</a><br>`;
+                popup += `<a class='map-item__link' href='https://npsotstg.wpengine.com/chapters/${chapter}' target='_blank'>${ele}</a><br>`;
               });
             }
 
@@ -513,7 +556,7 @@ function NMap(params) {
           gardenOptions.borderColor = "#5a703c";
           gardenOptions.backgroundColor = "rgba(255,255,255,0.8)";
 
-          const gardenData = mapData[0].filter(
+          const gardenData = mapData.filter(
             (ele) => ele.acf.map_item_type === "Chapter Demo Garden"
           );
 
@@ -542,7 +585,7 @@ function NMap(params) {
               popup += `<hr><p class='map-item__text'><b>Associated Chapters</b></p>`;
               garden.acf.map_item_associated_organization.forEach((ele) => {
                 const chapter = ele.replace(/ +/g, "-").toLowerCase();
-                popup += `<a class='map-item__link' href='https://npsot.us/chapter/${chapter}' target='_blank'>${ele}</a><br>`;
+                popup += `<a class='map-item__link' href='https://npsotstg.wpengine.com/chapters/${chapter}' target='_blank'>${ele}</a><br>`;
               });
             }
 
@@ -579,7 +622,7 @@ function NMap(params) {
           monarchOptions.borderColor = "#5D3FD3";
           monarchOptions.backgroundColor = "rgba(255,255,255,0.8)";
 
-          const monarchData = mapData[0].filter(
+          const monarchData = mapData.filter(
             (ele) => ele.acf.map_item_type === "I35 Monarch Station"
           );
 
@@ -613,7 +656,7 @@ function NMap(params) {
               popup += `<hr><p class='map-item__text'><b>Associated Chapters</b></p>`;
               garden.acf.map_item_associated_organization.forEach((ele) => {
                 const chapter = ele.replace(/ +/g, "-").toLowerCase();
-                popup += `<a class='map-item__link' href='https://npsot.us/chapter/${chapter}' target='_blank'>${ele}</a><br>`;
+                popup += `<a class='map-item__link' href='https://npsotstg.wpengine.com/chapters/${chapter}' target='_blank'>${ele}</a><br>`;
               });
             }
 
@@ -643,14 +686,14 @@ function NMap(params) {
         const loadNativeGarden = () => {
           //initialize layer for NICE pins
           const gardenPins = new L.LayerGroup();
-
+          
           const gardenOptions = { ...iconOptions };
           gardenOptions.icon = "camera";
           gardenOptions.textColor = "#c56a82";
           gardenOptions.borderColor = "#c56a82";
           gardenOptions.backgroundColor = "rgba(255,255,255,0.8)";
 
-          const gardenData = mapData[0].filter(
+          const gardenData = mapData.filter(
             (ele) => ele.acf.map_item_type === "Native Plant Garden"
           );
 
@@ -701,6 +744,9 @@ function NMap(params) {
           );
         };
         loadNativeGarden();
+      }
+    };
+    fetchMapData();
         if (
           params.eco3Show !== true &&
           params.eco4Show !== true &&
@@ -708,16 +754,15 @@ function NMap(params) {
         ) {
           document.querySelector(".spinner-container").hidden = true;
         }
-      }
-    };
-    fetchMapData();
   }
 
   /*
    *speaker* will load & show the speaker locations.
    */
   if (params.speaker === true) {
-    const url = "https://npsot.us/wp-json/wp/v2/speaker_bureau/?per_page=100";
+      
+    const url = "https://npsotstg.wpengine.com/wp-json/wp/v2/speaker_bureau/?per_page=100";
+    const url2 = "https://npsotstg.wpengine.com/wp-json/wp/v2/speaker_bureau/?per_page=100&page=2";
 
     const speakerArr = [];
 
@@ -725,12 +770,14 @@ function NMap(params) {
       try {
         let speakerRes = await fetch(url);
         let speakerJSON = await speakerRes.json();
+        let speakerRes2 = await fetch(url2);
+        let speakerJSON2 = await speakerRes2.json();
         speakerArr.push(speakerJSON);
       } catch (error) {
         console.log(error);
       }
       const speakerData = await Promise.all(speakerArr);
-
+    
       if (params.speaker) {
         //initialize layer for speaker pins
         const OMS = new OverlappingMarkerSpiderfier(map);
@@ -829,6 +876,7 @@ function NMap(params) {
     }
   }
 }
+
 
 //this toggles the legend when the toggle legend button is clicked
 const toggleLegend = () => {
