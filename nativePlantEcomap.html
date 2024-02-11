@@ -1,0 +1,607 @@
+<style>
+#native-plant-map {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  max-width: 500px;
+  border: 3px solid #3c5799;
+  border-radius: 5px;
+}
+
+.ecoregion-popup {
+  color: #3c5799;
+  transform: translate(50px, 80px) !important;
+  position: fixed !important;
+  font-size: 20px;
+}
+
+.ecoregion-popup:before {
+  border: none !important;
+}
+
+.spinner-container {
+  position: absolute;
+  z-index: 999;
+  color: #3c5799;
+  opacity: 0.8;
+
+}
+
+.spinner {
+      animation: spin 1s linear infinite; /* You can adjust the duration and animation type */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.leaflet-control-attribution {
+    font-size: 8px;
+}
+
+#toggle-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    z-index: 998;
+    border: none;
+    font-size: 10px;
+}
+
+#toggle-button:hover {
+    background-color: #b1be62;
+}
+#toggle-button:hover .toggle-tooltip-text {
+  visibility: visible;
+}
+
+#toggle-button:disabled {
+    cursor: not-allowed;
+    color: #c0c0c0;
+    background-color: #fff;
+    border: none;
+}
+
+#toggle-button .toggle-tooltip-text {
+  visibility: hidden;
+  width: 280px;
+  height: 60px;
+  background-color: #3c5799;
+  color: white;
+  text-align: center;
+  border-radius: 3px;
+  padding: 5px 0;
+  white-space: normal;
+ 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 40px;
+  right: 10%;
+}
+
+</style>
+
+<div id="native-plant-map">
+    <div class="spinner-container">
+        <svg class='spinner' width="48px" height="48px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path opacity="0.2" fill-rule="evenodd" clip-rule="evenodd" d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#000000"/>
+<path d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z" fill="#3c5799"/>
+</svg>
+    </div>
+        <button id='toggle-button' disabled>Show Level 3 Ecoregions
+          <span class="toggle-tooltip-text">Click this button to toggle between showing Level 3 and Level 4 ecoregions
+          </span> 
+        </button>
+</div>
+
+<script>
+    //initalize map variable, lat long is center of texas
+let map = L.map("native-plant-map", { zoomSnap: 0.25 }).setView(
+  [31.75, -99.9],
+  5.75
+);
+
+//set map tile layer to openstreet maps, bind zoom min max to avoid zooming to entire planet
+L.tileLayer(
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+  {
+    maxZoom: 10,
+    minZoom: 5,
+    attribution: 
+      "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community",
+  }
+).addTo(map);
+
+//array of ecoregion objects.  ID is for the epa.gov API.  Can customize styling here, right now all layers are green
+
+let ecoObj = [
+  {
+    name: "Chihuahuan Deserts",
+    //id 24 in the level 4 ecoregion query
+    id: 17,
+    style: "green",
+  },
+  {
+    name: "High Plains",
+    id: 18,
+    style: "green",
+  },
+  {
+    name: "Southwestern Tablelands",
+    id: 19,
+    style: "green",
+  },
+  {
+    name: "Central Great Plains",
+    id: 20,
+    style: "green",
+  },
+  {
+    name: "Cross Timbers",
+    id: 22,
+    style: "green",
+  },
+  {
+    name: "Edwards Plateau",
+    id: 24,
+    style: "green",
+  },
+  {
+    name: "Southern Texas Plains",
+    id: 25,
+    style: "green",
+  },
+  {
+    name: "Texas Blackland Prairies",
+    id: 26,
+    style: "green",
+  },
+  {
+    name: "East Central Texas Plains",
+    id: 27,
+    style: "green",
+  },
+  {
+    name: "Gulf Coast Prairies and Marshes",
+    id: 28,
+    style: "green", 
+  },
+  {
+    name: "Western Gulf Coastal Plain",
+    id: 29,
+    style: "green",
+  },
+];
+
+//level 4 https://geodata.epa.gov/arcgis/rest/services/ORD/USEPA_Ecoregions_Level_III_and_IV/MapServer/7
+
+const eco4Obj = 
+[    
+   {
+        name: "Chihuahuan Basins and Playas",
+        id: 250,
+        exclude: 17,
+    },
+    {
+        name: "Chihuahuan Desert Grasslands",
+        id: 251,
+        exclude: 17,
+    },
+    {
+        name: "Low Mountains and Bajadas",
+        id: 252,
+        exclude: 17,
+    },
+    {
+        name: "Chihuahuan Montane Woodlands",
+        id: 253,
+        exclude: 17,
+    },
+   {
+        name: "Stockton Plateau",
+        id: 254,
+        exclude: 17,
+    },
+    {
+        name: "Rolling Sand Plains",
+        id: 259,
+        exclude: 18,
+    },
+    {
+        name: "Canadian/Cimarron High Plains",
+        id: 262,
+        exclude: 18,
+    },
+    {
+        name: "Llano Estacado",
+        id: 266,
+        exclude: 18,
+    },
+    {
+        name: "Shinnery Sands",
+        id: 267,
+        exclude: 18,
+    },
+    {
+        name: "Arid Llano Estacado",
+        id: 268,
+        exclude: 18,
+    },
+    {
+        name: "Canadian/Cimarron Breaks",
+        id: 270,
+        exclude: 19,
+    },
+    {
+        name: "Flat Tablelands and Valleys",
+        id: 271,
+        exclude: 19,
+    },
+    {
+        name: "Caprock Canyons Badlands Breaks",
+        id: 272,
+        exclude: 19,
+    },
+    {
+        name: "Semiarid Canadian Breaks",
+        id: 273,
+        exclude: 19,
+    },
+    {
+        name: "Red Prairie",
+        id: 294,
+        exclude: 20,
+    },
+    {
+        name: "Broken Red Plains",
+        id: 295,
+        exclude: 20,
+    },
+    {
+        name: "Limestone Plains",
+        id: 296,
+        exclude: 20,
+    },
+    {
+        name: "Eastern Cross Timbers",
+        id: 307,
+        exclude: 22,
+    },
+    {
+        name: "Western Cross Timbers",
+        id: 308,
+        exclude: 22,
+    },
+    {
+        name: "Grand Prairie",
+        id: 309,
+        exclude: 22,
+    },
+    {
+        name: "Limestone Cut Plain",
+        id: 310,
+        exclude: 22,
+    },
+    {
+        name: "Carbonate Cross Timbers",
+        id: 311,
+        exclude: 22,
+    },
+    {
+        name: "Edwards Plateau Woodland",
+        id: 324,
+        exclude: 24,
+    },
+    {
+        name: "Llano Uplift",
+        id: 325,
+        exclude: 24,
+    },
+    {
+        name: "Balcones Canyonlands",
+        id: 326,
+        exclude: 24,
+    },
+    {
+        name: "Semiarid Edwards Plateau",
+        id: 327,
+        exclude: 24,
+    },
+    {
+        name: "Northern Nueces Alluvial Plains",
+        id: 328,
+        exclude: 25,
+    },
+    {
+        name: "Semiarid Edwards Bajada",
+        id: 329,
+        exclude: 25,
+    },
+    {
+        name: "Texas-Tamaulipan Thornscrub",
+        id: 330,
+        exclude: 25,
+    },
+    {
+        name: "Rio Grande Floodplain and Terraces",
+        id: 331,
+        exclude: 25,
+    },
+    {
+        name: "Northern Blackland Prairie",
+        id: 332,
+        exclude: 26,
+    },
+    {
+        name: "Southern Blackland Prairie",
+        id: 333,
+        exclude: 26,
+    },
+    {
+        name: "Floodplains and Low Terraces1",
+        id: 334,
+        exclude: 26,
+    },
+    {
+        name: "Northern Post Oak Savanna",
+        id: 335,
+        exclude: 27,
+    },
+    {
+        name: "Southern Post Oak Savanna",
+        id: 336,
+        exclude: 27,
+    },
+    {
+        name: "San Antonio Prairie",
+        id: 337,
+        exclude: 27,
+    },
+    {
+        name: "Northern Prairie Outliers",
+        id: 338,
+        exclude: 27,
+    },
+    {
+        name: "Bastrop Lost Pines",
+        id: 339,
+        exclude: 27,
+    },
+    {
+        name: "Floodplains and Low Terraces2",
+        id: 340,
+        exclude: 27,
+    },
+    {
+        name: "Tertiary Uplands",
+        id: 351,
+        exclude: 28,
+    },
+    {
+        name: "Floodplains and Low Terraces3",
+        id: 352,
+        exclude: 28,
+    },
+    {
+        name: "Pleistocene Fluvial Terraces",
+        id: 353,
+        exclude: 28,
+    },
+    {
+        name: "Southern Tertiary Uplands",
+        id: 355,
+        exclude: 28,
+    },
+    {
+        name: "Flatwoods",
+        id: 356,
+        exclude: 28,
+    },
+    {
+        name: "Red River Bottomlands",
+        id: 357,
+        exclude: 28,
+    },
+    {
+        name: "Northern Humid Gulf Coastal Prairies",
+        id: 341,
+        exclude: 29,
+    },
+    {
+        name: "Southern Subhumid Gulf Coastal Prairies",
+        id: 342,
+        exclude: 29,
+    },
+    {
+        name: "Floodplains and Low Terraces4",
+        id: 343,
+        exclude: 29,
+    },
+    {
+        name: "Coastal Sand Plain",
+        id: 344,
+        exclude: 29,
+    },
+    {
+        name: "Lower Rio Grande Valley",
+        id: 345,
+        exclude: 29,
+    },
+    {
+        name: "Lower Rio Grande Alluvial Floodplain",
+        id: 346,
+        exclude: 29,
+    },
+    {
+        name: "Texas-Louisiana Coastal Marshes",
+        id: 347,
+        exclude: 29,
+    },
+    {
+        name: "Mid-Coast Barrier Islands and Coastal Marshes",
+        id: 348,
+        exclude: 29,
+    },
+    {
+        name: "Laguna Madre Barrier Island and Coastal Marshes",
+        id: 349,
+        exclude: 29,
+    },
+];
+
+//add texas boundry geojson to map. this variable comes from the global texas geo file stored in the NPSOT map folder
+L.geoJSON(texasGeo, {
+  style: { weight: "5", fillOpacity: 0, color: "#3c5799" },
+}).addTo(map);
+
+  //add layer controller to map.  this is used for the layer toggle checkboxes
+//   const layerControl = L.control
+//     .layers(null, null, { collapsed: false })
+//     .addTo(map);
+
+//initialize level 3 ecoregion layer
+const level3Layer = new L.layerGroup();
+//initialize level 4 ecoregion layer
+const level4Layer = new L.layerGroup();
+
+let level3showing = true;
+
+//wait for page to load
+window.addEventListener("load", function () {
+  // get array of level 3 ecoregions from the page
+   const plantArr = document
+     .querySelector("#ecoregion-list")
+     .childNodes[1].innerText.split(",");
+     
+     
+     //get array of level 4 ecoregions from the page
+    const level4 = document.querySelector("#lvl-4-ecoregions").children;
+    const level4Array = [];
+    Array.from(level4).forEach(function (element) {
+       if (element.innerText.trim() === "") return;
+       level4Array.push(element.innerText.trim());
+    })
+    const level4flat = level4Array.reduce((acc, curr) => {
+       return acc.concat(curr.split(','));
+    }, [])
+  const level4Trim = level4flat.map(ele => ele.trim());
+  
+  
+  //hide the button if only level 3 ecoregions
+  if (level4Trim.length === 0) {
+     const button = document.querySelector("#toggle-button")
+     button.style.display = "none";
+  }
+  
+
+  //loop over texas ecoregions & the ecoregions for the plant, load overlays if they match
+  let loadEcos = async () => {
+    const promises = [];
+    for (let eco of ecoObj) {
+      for (let geoArea of plantArr) {
+        if (geoArea.trim() === eco.name) {
+          try {
+            let res = await fetch(
+              `https://geodata.epa.gov/arcgis/rest/services/ORD/USEPA_Ecoregions_Level_III_and_IV/MapServer/11/query?where=&text=&objectIds=${eco.id}&time=&timeRelation=esriTimeRelationOverlaps&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&sqlFormat=none&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson`
+            );
+            let json = await res.json();
+            //add ecoregion name so it can be bound to tooltip
+            json.name = eco.name;
+            promises.push(json);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    }
+    Promise.all(promises).then((res) => {
+      for (let ecoregion of res) {
+        L.geoJSON(ecoregion, {
+          style: { color: "#3c5799", weight: 1, fillOpacity: 0.3 },
+        })
+          .bindTooltip(ecoregion.name, { className: "ecoregion-popup" })
+          .addTo(level3Layer);
+      }
+    });
+    //load level 3 only if level 4 is empty.
+    if (level4Trim.length === 0) map.addLayer(level3Layer);
+    // layerControl.addOverlay(level3Layer, "Level 3 Ecoregions");
+  };
+  loadEcos();
+  
+  //loop over the level 4 ecoregions, if they exist, and add a new map layer for them
+  let loadEcos4 = async () => {
+      const promises = [];
+      for (let eco of eco4Obj) {
+          for (let geoArea of level4Trim) {
+              if (geoArea === eco.name) {
+                  try {
+                      let res = await fetch(
+                          `https://geodata.epa.gov/arcgis/rest/services/ORD/USEPA_Ecoregions_Level_III_and_IV/MapServer/7/query?where=&text=&objectIds=${eco.id}&time=&timeRelation=esriTimeRelationOverlaps&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&sqlFormat=none&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson`
+                          );
+                        let json = await res.json();
+                        //add ecoregion name so it can be bound to tooltip
+                        json.name = eco.name;
+                        promises.push(json);
+                  } catch (error) {
+                      console.log(error)
+                  }
+              }
+          }
+      }
+        Promise.all(promises).then((res) => {
+        document.querySelector(".spinner-container").hidden = true;
+
+      for (let ecoregion of res) {
+        L.geoJSON(ecoregion, {
+          style: { color: "#3c5799", weight: 1, fillOpacity: 0.3 },
+        })
+          .bindTooltip(ecoregion.name, { className: "ecoregion-popup" })
+          .addTo(level4Layer);
+      }
+    const button = document.querySelector("#toggle-button");
+    button.disabled = false;
+    });
+    if (level4Trim.length > 0) map.addLayer(level4Layer);
+    level3showing = false;
+    // layerControl.addOverlay(level4Layer, "Level 4 Ecoregions");
+
+  }
+  loadEcos4();
+});
+
+
+window.addEventListener("load", function () {
+const button = document.querySelector("#toggle-button");
+
+function toggleLayer() {
+   if (level3showing) {
+       map.removeLayer(level3Layer);
+       map.addLayer(level4Layer);
+       level3showing = false;
+       button.textContent = "Show Level 3 Ecoregions"
+       return;
+   }
+   if (!level3showing) {
+       map.removeLayer(level4Layer);
+       map.addLayer(level3Layer)
+       level3showing = true;
+       button.textContent = "Show Level 4 Ecoregions"
+       return;
+
+   }
+}
+
+button.addEventListener("click", toggleLayer);
+
+});
+
+</script>
